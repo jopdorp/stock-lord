@@ -4,6 +4,79 @@ from content import NEWS, MIRACLES, DISASTERS
 import random
 import sdl2, sdl2.ext
 
+class GameWindow(sdl2.ext.Window):
+    def __init__(self, game):
+        super().__init__("Financial Growth Simulator", size=(800, 600))
+        self.game = game
+
+    def render(self):
+        # TODO: Implement rendering logic
+        pass
+
+    def handle_event(self, event):
+        if event.type == sdl2.SDL_QUIT:
+            sdl2.ext.quit()
+            return False
+        elif event.type == sdl2.SDL_KEYDOWN:
+            if event.key.keysym.sym == sdl2.SDLK_ESCAPE:
+                sdl2.ext.quit()
+                return False
+            elif event.key.keysym.sym == sdl2.SDLK_1:
+                self.game.buy_units("ETI")
+            elif event.key.keysym.sym == sdl2.SDLK_2:
+                self.game.buy_units("EAI")
+            elif event.key.keysym.sym == sdl2.SDLK_3:
+                self.game.buy_units("GHI")
+            elif event.key.keysym.sym == sdl2.SDLK_4:
+                self.game.sell_units("ETI")
+            elif event.key.keysym.sym == sdl2.SDLK_5:
+                self.game.sell_units("EAI")
+            elif event.key.keysym.sym == sdl2.SDLK_6:
+                self.game.sell_units("GHI")
+            elif event.key.keysym.sym == sdl2.SDLK_7:
+                self.game.switch_markets()
+        return True
+
+class Game:
+    def __init__(self):
+        self.cash = 10000
+        self.ETI_units = 0  # European Tech Index
+        self.EAI_units = 0  # European Automotive Index
+        self.GHI_units = 0  # Global Healthcare Index
+        self.EURUSD = 1.10  # Forex rate of EUR to USD
+        self.days = 30  # Extendable
+        self.news = NEWS
+        self.miracles = MIRACLES
+        self.disasters = DISASTERS
+        self.exchanges = ["Amsterdam", "Frankfurt", "Paris", "London", "New York"]
+        self.current_exchange = "Amsterdam"
+        self.turns_left = 30
+        self.previous_values = {"Amsterdam": {"ETI": 100, "GHI": 75},
+                                "Frankfurt": {"EAI": 50, "EURUSD": 1.12},
+                                "Paris": {"EAI": 50, "GHI": 75},
+                                "London": {"ETI": 100, "EURUSD": 1.10},
+                                "New York": {"ETI": 110, "EAI": 60, "GHI": 80, "EURUSD": 1.09}}
+        self.stocks = {"ETI": ["Amsterdam", "London", "New York"],
+                       "EAI": ["Frankfurt", "Paris", "New York"],
+                       "GHI": ["Paris", "Amsterdam", "New York"]}
+        self.forex = ["London", "Frankfurt", "New York"]
+
+    def buy_units(self, asset):
+        # TODO: Implement buy units logic
+        pass
+
+    def sell_units(self, asset):
+        # TODO: Implement sell units logic
+        pass
+
+    def switch_markets(self):
+        # TODO: Implement switch markets logic
+        pass
+
+    def display_portfolio(self):
+        # TODO: Implement display portfolio logic
+        pass
+    
 class FinancialGame:
     def __init__(self):
         self.cash = 10000
