@@ -63,6 +63,27 @@ class FinancialGame:
 
             print("")
 
+            # Check if a miracle or disaster event occurs
+            event_occurs = random.choice([True, False])
+            if event_occurs:
+                event_type = random.choice(['miracle', 'disaster'])
+                event = random.choice(self.miracles) if event_type == 'miracle' else random.choice(self.disasters)
+                event_name, stock, impact, _, _ = event
+                
+                if event_type == "miracle":
+                    print("\n🌟Fantastic News! A Miraculous Event Just Transpired!🌟")
+                else:
+                    print("\n❗Breaking News! An Unexpected Catastrophe Strikes the Market!❗")
+                
+                print(f"Details: {event_name}")
+                if stock == "EURUSD":
+                    self.EURUSD *= impact  # Update the EURUSD value separately
+                    print(f"{stock} value is now €{self.EURUSD:.2f}")
+                else:
+                    daily_prices[stock] *= impact  # Adjust the price due to the event
+                    print(f"{stock} stock value on {self.current_exchange} market is now €{daily_prices[stock]:.2f}/unit")
+            
+
             while True:
                 print(f"\nYou are currently trading on the {self.current_exchange} exchange.")
                 print("What would you like to do?")
