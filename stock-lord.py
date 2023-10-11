@@ -80,9 +80,11 @@ class FinancialGame:
                     self.EURUSD *= impact  # Update the EURUSD value separately
                     print(f"{stock} value is now €{self.EURUSD:.2f}")
                 else:
-                    daily_prices[stock] *= impact  # Adjust the price due to the event
-                    print(f"{stock} stock value on {self.current_exchange} market is now €{daily_prices[stock]:.2f}/unit")
-            
+                    if stock in daily_prices:
+                        daily_prices[stock] *= impact  # Adjust the price due to the event
+                        print(f"{stock} stock value on {self.current_exchange} market is now €{daily_prices[stock]:.2f}/unit")
+                    else:
+                        print(f"{stock} is not available on the {self.current_exchange} market.")
 
             while True:
                 print(f"\nYou are currently trading on the {self.current_exchange} exchange.")
