@@ -48,6 +48,73 @@ class FinancialGame:
         print(f"EUR/USD Forex: €{self.cash/self.EURUSD:.2f}")
         print("")
    
+    def switch_market(self, ):
+        if self.turns_left > 0:
+            available_exchanges = [exchange for exchange in self.exchanges if exchange != self.current_exchange]
+            print("Which exchange would you like to switch to?")
+            for i, exchange in enumerate(available_exchanges):
+                print(f"{i+1}. {exchange}")
+            exchange_choice = input("Enter your choice: ")
+            try:
+                exchange_choice = int(exchange_choice)
+                if exchange_choice < 1 or exchange_choice > len(available_exchanges):
+                    raise ValueError
+            except ValueError:
+                print("Invalid exchange choice. Please try again.")
+                return True
+            self.show_travel_animation(self.current_exchange, available_exchanges[exchange_choice-1])
+            self.current_exchange = available_exchanges[exchange_choice-1]
+            self.turns_left -= 1
+            print(f"You have switched to the {self.current_exchange} exchange. You have {self.turns_left} turns left to switch markets.")
+        else:
+            print("You have no turns left to switch markets.")
+
+    def show_travel_animation(self, origin, destination):
+        print(f"Travelling from {origin} to {destination}...")
+        print("   __|__")
+        print("  |    |____")
+        print("  |           )")
+        print("  |    ____,-----'")
+        print("  |___(           ")
+        print("      _L__|__")
+        print("     /         \ ")
+        print("    /___________\ ")
+        print("   |             |")
+        print("   |    Fly      |")
+        print("   |    High!    |")
+        print("   |             |")
+        print("   '-------------'")
+        print("     O         O")
+        print("      \       /")
+        print("       `~~~~~`")
+        print(f"Arrived at {destination}!")
+    
+    def buy_units(self, daily_prices):
+        print("Which type of unit would you like to buy?")
+        available_stocks = [stock for stock in self.stocks.keys() if self.current_exchange in self.stocks[stock]]
+        for i, stock in enumerate(available_stocks):
+            print(f"{i+1}. {stock}")
+        stock_choice = input("Enter your choice: ")
+        try:
+            stock_choice = int(stock_choice)
+            if stock_choice < 1 or stock_choice > len(available_stocks):
+                raise ValueError
+        except ValueError:
+            print("Invalid choice. Please try again.")
+            return True
+        asset = available_stocks[stock_choice-1]
+        current_price = daily_prices[asset]
+        max_units_can_buy = self.cash / current_price
+        units = float(input(f"How many units of {asset} would you like to buy? (Max {max_units_can_buy:.2f} units) "))
+        if units > max_units_can_buy:
+            print(f"You cannot afford {units:.2f} units of {asset}. You can buy up to {max_units_can_buy:.2f} units.")
+            return True
+        cost = units * current_price
+        setattr(self, f"{asset}_units", getattr(self, f"{asset}_units") + units)
+        self.cash -= cost
+        print(f"You bought {units:.2f} units of {asset} on {self.current_exchange} market for €{cost:.2f}.")
+        print(f"Current price of {asset} on {self.current_exchange} market: €{current_price:.2f}/unit")
+    
     def play_game(self):
         for day in range(self.days):
             print(f"\nDay {day + 1}:")
@@ -96,31 +163,8 @@ class FinancialGame:
                 choice = input("Enter your choice (1-4): ")
 
                 if choice == "1":
-                    print("Which type of unit would you like to buy?")
-                    available_stocks = [stock for stock in self.stocks.keys() if self.current_exchange in self.stocks[stock]]
-                    for i, stock in enumerate(available_stocks):
-                        print(f"{i+1}. {stock}")
-                    stock_choice = input("Enter your choice: ")
-                    try:
-                        stock_choice = int(stock_choice)
-                        if stock_choice < 1 or stock_choice > len(available_stocks):
-                            raise ValueError
-                    except ValueError:
-                        print("Invalid choice. Please try again.")
+                    if self.buy_units(daily_prices):
                         continue
-                    asset = available_stocks[stock_choice-1]
-                    current_price = daily_prices[asset]
-                    max_units_can_buy = self.cash / current_price
-                    units = float(input(f"How many units of {asset} would you like to buy? (Max {max_units_can_buy:.2f} units) "))
-                    if units > max_units_can_buy:
-                        print(f"You cannot afford {units:.2f} units of {asset}. You can buy up to {max_units_can_buy:.2f} units.")
-                        continue
-                    cost = units * current_price
-                    setattr(self, f"{asset}_units", getattr(self, f"{asset}_units") + units)
-                    self.cash -= cost
-                    print(f"You bought {units:.2f} units of {asset} on {self.current_exchange} market for €{cost:.2f}.")
-                    print(f"Current price of {asset} on {self.current_exchange} market: €{current_price:.2f}/unit")
-
                 elif choice == "2":
                     print("Which type of unit would you like to sell?")
                     available_stocks = [stock for stock in self.stocks.keys() if self.current_exchange in self.stocks[stock]]
@@ -154,25 +198,8 @@ class FinancialGame:
                     print(f"Current price of {asset} on {self.current_exchange} market: €{current_price:.2f}/unit")
 
                 elif choice == "3":
-                    if self.turns_left > 0:
-                        available_exchanges = [exchange for exchange in self.exchanges if exchange != self.current_exchange]
-                        print("Which exchange would you like to switch to?")
-                        for i, exchange in enumerate(available_exchanges):
-                            print(f"{i+1}. {exchange}")
-                        exchange_choice = input("Enter your choice: ")
-                        try:
-                            exchange_choice = int(exchange_choice)
-                            if exchange_choice < 1 or exchange_choice > len(available_exchanges):
-                                raise ValueError
-                        except ValueError:
-                            print("Invalid exchange choice. Please try again.")
-                            continue
-                        self.current_exchange = available_exchanges[exchange_choice-1]
-                        self.turns_left -= 1
-                        print(f"You have switched to the {self.current_exchange} exchange. You have {self.turns_left} turns left to switch markets.")
-                    else:
-                        print("You have no turns left to switch markets.")
-
+                    if self.switch_market():
+                        continue
                 elif choice == "4":
                     pass
 
